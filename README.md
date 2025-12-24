@@ -20,7 +20,11 @@ chmod +x game_mode.sh
 6. Run Tool:
 ./game_mode.sh
 
-(PAST AND INSTALL)g upgrade -y && pkg install git -y && git clone https://github.com/mrparves707-star/p-master && cd p-master && chmod +x game_mode.sh 
+(PAST AND INSTALL1)
+pkg upgrade -y && pkg install git -y && git clone https://github.com/mrparves707-star/p-master && cd p-master && chmod +x game_mode.sh 
+
+(PAST AND INSTALL2) use any one
+pkg update && pkg upgrade -y && pkg install git -y && git clone https://github.com/mrparves707-star/p-master && cd p-master && chmod +x game_mode.sh && ./game_mode.sh
 
 Open Main Manu Past This 
 
