@@ -10,8 +10,32 @@ B='\033[1;34m'
 P='\033[1;35m'
 RESET='\033[0m'
 
-# --- GitHub Database ---
+# --- Configuration ---
 GITHUB_DB="https://raw.githubusercontent.com/mrparves707-star/database/main/premium_users.txt"
+SCRIPT_NAME="game_mode.sh" # আপনার স্ক্রিপ্ট ফাইলের নাম ঠিক আছে কি না দেখে নিন
+
+# --- 0. AUTO UPDATE SYSTEM ---
+check_update() {
+    echo -e "${C}[*] Checking for updates...${RESET}"
+    # গিট সার্ভারের সাথে লোকাল ফাইলের তুলনা
+    git fetch origin main > /dev/null 2>&1
+    UPSTREAM=${1:-'@{u}'}
+    LOCAL=$(git rev-parse @)
+    REMOTE=$(git rev-parse "$UPSTREAM")
+
+    if [ $LOCAL != $REMOTE ]; then
+        echo -e "${Y}[!] New Update Found! Downloading...${RESET}"
+        git reset --hard origin main > /dev/null 2>&1
+        git pull origin main > /dev/null 2>&1
+        echo -e "${G}[✓] Update Complete! Restarting tool...${RESET}"
+        sleep 2
+        bash "$SCRIPT_NAME"
+        exit
+    else
+        echo -e "${G}[✓] You are using the latest version.${RESET}"
+        sleep 1
+    fi
+}
 
 # --- 1. INTRO & STARTUP ANIMATION ---
 intro_animation() {
@@ -21,9 +45,8 @@ intro_animation() {
     type_effect "        [#] SYSTEM VERSION: 2.0 (GOLD) [#]"
     echo -e "${RESET}"
     echo -ne "${Y}INITIALIZING CORE MODULES: "
-    for i in {1..15}; do echo -ne "${G}■"; sleep 0.1; done
+    for i in {1..15}; do echo -ne "${G}■"; sleep 0.05; done
     echo -e " ${W}100%${RESET}\n"
-    sleep 1
 }
 
 type_effect() {
@@ -52,7 +75,7 @@ start_booster() {
     echo -e "${B}╔════════════════════════════════════════╗${RESET}"
     echo -e "${B}║       ${W}NON-ROOT PERFORMANCE ENGINE      ${B}║${RESET}"
     echo -e "${B}╚════════════════════════════════════════╝${RESET}"
-    pro_progress "SCANNIG SYSTEM JUNK"
+    pro_progress "SCANNING SYSTEM JUNK"
     rm -rf ~/.cache/* > /dev/null 2>&1
     pro_progress "CLEANING DALVIK CACHE"
     pro_progress "FREEING RAM (SMART KILL)"
@@ -62,7 +85,7 @@ start_booster() {
     sleep 2
 }
 
-# --- 3. REGULAR ROOT MENU (NO PASSWORD) ---
+# --- 3. REGULAR ROOT MENU ---
 regular_menu() {
     while true; do
         clear
@@ -92,7 +115,7 @@ regular_menu() {
     done
 }
 
-# --- 4. PREMIUM ROOT MENU (AUTHORIZED) ---
+# --- 4. PREMIUM MASTER INTERFACE ---
 premium_interface() {
     while true; do
         clear
@@ -135,14 +158,14 @@ premium_login() {
     read enter
     
     pro_progress "Checking Server Authorization"
-    IS_AUTH=$(curl -s "$GITHUB_DB" | grep -w "$MY_ID")
+    IS_AUTH=$(curl -s "$GITHUB_DB" | grep -iw "$MY_ID")
 
     if [ ! -z "$IS_AUTH" ] && [ ! -z "$MY_ID" ]; then
-        echo -e "${G}>>> SUCCESS: WELCOME TO PREMIUM SECTOR <<<${RESET}"; sleep 2
+        echo -e "${G}>>> SUCCESS: WELCOME MASTER <<<${RESET}"; sleep 2
         premium_interface
     else
         echo -e "${R}>>> ERROR: DEVICE NOT AUTHORIZED! <<<${RESET}"
-        echo -e "${W}Please contact Admin Parvez for access.${RESET}"; sleep 4
+        sleep 4
     fi
 }
 
@@ -188,7 +211,9 @@ show_menu() {
 
 # --- Start ---
 trap 'su -c "iptables -F OUTPUT" > /dev/null 2>&1; exit' INT
-pkg install curl iptables -y > /dev/null 2>&1
+pkg install curl iptables git -y > /dev/null 2>&1
+clear
+check_update  # অটো আপডেট চেক
 intro_animation
 show_menu
 
